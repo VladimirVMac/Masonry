@@ -47,7 +47,7 @@
     MAS_VIEW *tempSuperView = [self mas_commonSuperviewOfViews];
     if (axisType == MASAxisTypeHorizontal) {
         MAS_VIEW *prev;
-        for (int i = 0; i < self.count; i++) {
+        for (NSUInteger i = 0; i < self.count; i++) {
             MAS_VIEW *v = self[i];
             [v mas_makeConstraints:^(MASConstraintMaker *make) {
                 if (prev) {
@@ -67,7 +67,7 @@
     }
     else {
         MAS_VIEW *prev;
-        for (int i = 0; i < self.count; i++) {
+        for (NSUInteger i = 0; i < self.count; i++) {
             MAS_VIEW *v = self[i];
             [v mas_makeConstraints:^(MASConstraintMaker *make) {
                 if (prev) {
@@ -96,7 +96,7 @@
     MAS_VIEW *tempSuperView = [self mas_commonSuperviewOfViews];
     if (axisType == MASAxisTypeHorizontal) {
         MAS_VIEW *prev;
-        for (int i = 0; i < self.count; i++) {
+        for (NSUInteger i = 0; i < self.count; i++) {
             MAS_VIEW *v = self[i];
             [v mas_makeConstraints:^(MASConstraintMaker *make) {
                 if (prev) {
@@ -119,7 +119,7 @@
     }
     else {
         MAS_VIEW *prev;
-        for (int i = 0; i < self.count; i++) {
+        for (NSUInteger i = 0; i < self.count; i++) {
             MAS_VIEW *v = self[i];
             [v mas_makeConstraints:^(MASConstraintMaker *make) {
                 if (prev) {

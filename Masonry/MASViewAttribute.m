@@ -39,8 +39,10 @@
     return [super isEqual:viewAttribute];
 }
 
-- (NSUInteger)hash {
-    return MAS_NSUINTROTATE([self.view hash], MAS_NSUINT_BIT / 2) ^ self.layoutAttribute;
+- (NSUInteger)hash
+{
+    UIView *view = self.view;
+    return MAS_NSUINTROTATE([view hash], MAS_NSUINT_BIT / 2) ^ self.layoutAttribute;
 }
 
 @end

@@ -179,8 +179,9 @@ static char kInstalledConstraintsKey;
                 [children addObject:viewConstraint];
             }
             MASCompositeConstraint *compositeConstraint = [[MASCompositeConstraint alloc] initWithChildren:children];
-            compositeConstraint.delegate = self.delegate;
-            [self.delegate constraint:self shouldBeReplacedWithConstraint:compositeConstraint];
+            id<MASConstraintDelegate> delegate = self.delegate;
+            compositeConstraint.delegate = delegate;
+            [delegate constraint:self shouldBeReplacedWithConstraint:compositeConstraint];
             return compositeConstraint;
         } else {
             NSAssert(!self.hasLayoutRelation || self.layoutRelation == relation && [attribute isKindOfClass:NSValue.class], @"Redefinition of constraint relation");
@@ -299,10 +300,12 @@ static char kInstalledConstraintsKey;
     if (self.hasBeenInstalled) {
         return;
     }
+    MASLayoutConstraint *lc = self.layoutConstraint;
+    UIView *fview = self.firstViewAttribute.view;
     
-    if ([self supportsActiveProperty] && self.layoutConstraint) {
-        self.layoutConstraint.active = YES;
-        [self.firstViewAttribute.view.mas_installedConstraints addObject:self];
+    if ([self supportsActiveProperty] && lc) {
+        lc.active = YES;
+        [fview.mas_installedConstraints addObject:self];
         return;
     }
     
@@ -315,7 +318,7 @@ static char kInstalledConstraintsKey;
     // therefore we assume that is refering to superview
     // eg make.left.equalTo(@10)
     if (!self.firstViewAttribute.isSizeAttribute && !self.secondViewAttribute) {
-        secondLayoutItem = self.firstViewAttribute.view.superview;
+        secondLayoutItem = fview.superview;
         secondLayoutAttribute = firstLayoutAttribute;
     }
     
@@ -330,17 +333,18 @@ static char kInstalledConstraintsKey;
     
     layoutConstraint.priority = self.layoutPriority;
     layoutConstraint.mas_key = self.mas_key;
-    
-    if (self.secondViewAttribute.view) {
-        MAS_VIEW *closestCommonSuperview = [self.firstViewAttribute.view mas_closestCommonSuperview:self.secondViewAttribute.view];
+    MASViewAttribute *sav = self.secondViewAttribute;
+    UIView *view = sav.view;
+    if (view) {
+        MAS_VIEW *closestCommonSuperview = [fview mas_closestCommonSuperview:view];
         NSAssert(closestCommonSuperview,
                  @"couldn't find a common superview for %@ and %@",
-                 self.firstViewAttribute.view, self.secondViewAttribute.view);
+                 fview, self.secondViewAttribute.view);
         self.installedView = closestCommonSuperview;
     } else if (self.firstViewAttribute.isSizeAttribute) {
-        self.installedView = self.firstViewAttribute.view;
+        self.installedView = fview;
     } else {
-        self.installedView = self.firstViewAttribute.view.superview;
+        self.installedView = fview.superview;
     }
 
 
@@ -353,7 +357,8 @@ static char kInstalledConstraintsKey;
         existingConstraint.constant = layoutConstraint.constant;
         self.layoutConstraint = existingConstraint;
     } else {
-        [self.installedView addConstraint:layoutConstraint];
+        MAS_VIEW *iv = self.installedView;
+        [iv addConstraint:layoutConstraint];
         self.layoutConstraint = layoutConstraint;
         [firstLayoutItem.mas_installedConstraints addObject:self];
     }
@@ -380,17 +385,21 @@ static char kInstalledConstraintsKey;
 }
 
 - (void)uninstall {
+    MASLayoutConstraint *c = self.layoutConstraint;
+        UIView *view = self.firstViewAttribute.view;
+    
     if ([self supportsActiveProperty]) {
-        self.layoutConstraint.active = NO;
-        [self.firstViewAttribute.view.mas_installedConstraints removeObject:self];
+        c.active = NO;
+
+        [view.mas_installedConstraints removeObject:self];
         return;
     }
     
-    [self.installedView removeConstraint:self.layoutConstraint];
+    [self.installedView removeConstraint:c];
     self.layoutConstraint = nil;
     self.installedView = nil;
     
-    [self.firstViewAttribute.view.mas_installedConstraints removeObject:self];
+    [view.mas_installedConstraints removeObject:self];
 }
 
 @end
