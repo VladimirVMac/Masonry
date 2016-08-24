@@ -130,7 +130,7 @@
 
 - (void)setLayoutConstantWithValue:(NSValue *)value {
     if ([value isKindOfClass:NSNumber.class]) {
-        self.offset = [(NSNumber *)value doubleValue];
+        self.offset = [(NSNumber *)value floatValue];
     } else if (strcmp(value.objCType, @encode(CGPoint)) == 0) {
         CGPoint point;
         [value getValue:&point];

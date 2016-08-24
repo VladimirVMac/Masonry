@@ -149,7 +149,7 @@ static char kInstalledConstraintsKey;
         NSAssert(!self.hasBeenInstalled,
                  @"Cannot modify constraint multiplier after it has been installed");
 
-        self.layoutMultiplier = 1.0/divider;
+        self.layoutMultiplier = 1.0f/divider;
         return self;
     };
 }
